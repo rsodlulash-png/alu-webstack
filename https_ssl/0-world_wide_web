@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Displays the record type and destination of subdomains of a given domain
+# shellcheck disable=SC2086
+
+display_info() {
+	local domain="$1"
+	local sub="$2"
+
+	dig "$sub.$domain" | grep -A1 'ANSWER SECTION:' | tail -n 1 \
+		| awk -v s="$sub" '{print "The subdomain " s " is a " $4 " record and points to " $5}'
+}
+
+if [ "$#" -eq 1 ]; then
+	for sub in www lb-01 web-01 web-02; do
+		display_info "$1" "$sub"
+	done
+else
+	display_info "$1" "$2"
+fi
